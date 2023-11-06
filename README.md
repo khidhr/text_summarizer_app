@@ -16,6 +16,3 @@ This web application allows users to summarize text input or uploaded .txt files
 ## Model Information
 This app uses the 't5-base' model, a text-to-text transformer trained on a mixture of unsupervised and supervised tasks. For more information, see the [Hugging Face documentation](https://huggingface.co/transformers/model_doc/t5.html).
 
----
-
-Developed by [Halab Khidhr](https://github.com/khidhr)
