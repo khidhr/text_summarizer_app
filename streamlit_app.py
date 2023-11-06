@@ -1,22 +1,25 @@
 import streamlit as st
-from transformers import pipeline
+from transformers import pipeline, T5Tokenizer, T5ForConditionalGeneration
+
 st.set_page_config(
     page_title="Text Summarizer App",
-    page_icon=":pencil:",
+    page_icon="📄",
     layout="wide",
     initial_sidebar_state="expanded",
 )
-
-
 st.markdown("""
     <style>
     [data-testid="stAppViewContainer"] {
-        background-color: #3D30A2;
+        background-color: #164863;
     }
     </style>
     """, unsafe_allow_html=True)
-# Load the text summarization model from Hugging Face
-summarizer = pipeline("summarization")
+
+# Load the smaller text summarization model and tokenizer
+model_name = "t5-small"
+tokenizer = T5Tokenizer.from_pretrained("t5-small")
+model = T5ForConditionalGeneration.from_pretrained("t5-small")
+summarizer = pipeline("summarization", model=model, tokenizer=tokenizer)
 
 # Streamlit UI components
 st.title("Text Summarizer App")
@@ -28,27 +31,28 @@ file = st.file_uploader("Upload a Text File (.txt)", type=["txt"])
 
 if st.button("Summarize"):
     if user_input:
-        # Perform text summarization for user 
+        # Perform text summarization for user
+
+        inputs = "summarize: " + user_input
         progress_bar = st.progress(0)
-
-        summary = summarizer(user_input, max_length=150, do_sample=False)
+        summary = summarizer(inputs, max_length=150, min_length=40, do_sample=False)
         progress_bar.progress(100)
-
         st.subheader("Summary:")
-        st.write(summary[0]["summary_text"])
+        st.write(summary[0]['summary_text'])
     elif file:
         # Perform text summarization for uploaded file
         file_content = file.read().decode("utf-8")
-        summary = summarizer(file_content, max_length=150, do_sample=False)
+        inputs = tokenizer.encode("summarize: " + file_content, return_tensors="pt", max_length=1024, truncation=True)
+        summary_ids = summarizer.generate(inputs, max_length=150, min_length=40, length_penalty=2.0, num_return_sequences=1)
+        summary = tokenizer.decode(summary_ids[0], skip_special_tokens=True)
         st.subheader("Summary:")
-        st.write(summary[0]["summary_text"])
+        st.write(summary)
     else:
         st.warning("Please enter some text or upload a .txt file to summarize.")
 
 st.markdown("### Model Information:")
-st.markdown("This app uses the 't5-base' model from the Hugging Face Transformers library for text summarization.")
-st.markdown("The 't5-base' model is a text-to-text transformer trained on a mixture of unsupervised and supervised tasks.")
+st.markdown(f"This app uses the '{model_name}' model from the Hugging Face Transformers library for text summarization.")
 st.markdown("For more information, see the [Hugging Face documentation](https://huggingface.co/transformers/model_doc/t5.html).")
 
 st.markdown("---")
-st.markdown("Developed by [Halab Khidhr](https://github.com/khidhr)")
+st.subheader("Developed by [Halab Khidhr](https://github.com/khidhr)")
