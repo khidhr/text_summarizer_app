@@ -1,5 +1,5 @@
 # Text Summarizer App
-
+A trial of the app can be found [here](https://textsummarizerapp.streamlit.app/)
 📝
 
 This web application allows users to summarize text input or uploaded .txt files using the 't5-base' model from the Hugging Face Transformers library.
