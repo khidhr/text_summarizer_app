@@ -1,6 +1,6 @@
 # Text Summarizer App
 
-![Icon](https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/120/apple/285/pencil_270f.png)
+📝
 
 This web application allows users to summarize text input or uploaded .txt files using the 't5-base' model from the Hugging Face Transformers library.
 
